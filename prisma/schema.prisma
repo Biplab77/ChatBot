@@ -1,0 +1,25 @@
+model User {
+  id          Int           @id @default(autoincrement())
+  name        String
+  email       String        @unique
+  chatHistory ChatHistory[] // Relation to ChatHistory
+}
+
+model ChatHistory {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  userMessage  String
+  botResponse  String
+  timestamp    DateTime @default(now())
+
+  // Correct relation to User model
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+datasource db {
+  provider = "postgresql"  // Change this if using another database (e.g., "mysql", "sqlite")
+  url      = env("DATABASE_URL") // Loads from .env file
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
