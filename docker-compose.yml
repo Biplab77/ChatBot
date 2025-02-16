@@ -1,0 +1,45 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: abroad_study
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Ollama Server
+  ollama:
+    image: ollama/ollama
+    container_name: ollama_server
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama  # Persist models
+
+  # LangChain FastAPI Backend
+  langchain-backend:
+    build:
+      context: .    # The Dockerfile is now in the root directory
+      dockerfile: Dockerfile  # Update this line to point to the new location
+    container_name: langchain_api
+    restart: always
+    depends_on:
+      - db
+      - ollama
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/abroad_study
+      - OLLAMA_API_URL=http://ollama:11434  # Connect backend to Ollama
+      - SECRET_KEY=6ff989470e69f66a995cdba0435ece5f32399b85e4414feaad326f978d2833c0
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
+  ollama_data:  # Persistent storage for Ollama models

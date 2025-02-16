@@ -1,13 +1,19 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 # Import necessary modules
-from fastapi import FastAPI, Depends  # FastAPI for creating API and Depends for dependency injection (e.g., token verification)
+from fastapi import FastAPI, Depends, HTTPException  # FastAPI for creating API and Depends for dependency injection (e.g., token verification)
 from pydantic import BaseModel  # BaseModel for data validation (Pydantic)
 from chatbot import ChatBot  # Import the ChatBot class to handle chatbot interactions
-from authentication import verify_token  # Import a function to verify the user's authentication token
+from app.authentication import verify_token, create_access_token, verify_credentials  # Import authentication-related functions
 from database import SessionLocal  # Import the database session for interacting with the database
 from models.chat_history import ChatHistory  # Import the ChatHistory model to store chat records in the database
-
+from models.user import User
 # Initialize the FastAPI app
 app = FastAPI()
+
 
 # Initialize the chatbot instance
 chatbot = ChatBot()
@@ -16,6 +22,24 @@ chatbot = ChatBot()
 class Message(BaseModel):
     user_id: int  # User ID that sent the message
     text: str  # The text of the message sent by the user
+
+# Define a Pydantic model for login requests
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+# POST endpoint for login to authenticate user and return JWT token
+@app.post("/login")
+async def login(request: LoginRequest):
+    # Verify the user's credentials
+    if not verify_credentials(request.username, request.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    # Create an access token for the user
+    access_token = create_access_token(data={"sub": request.username})
+
+    # Return the access token to the user
+    return {"access_token": access_token, "token_type": "bearer"}
 
 # Define a POST endpoint to handle chat interactions
 @app.post("/chat/")
@@ -57,3 +81,8 @@ def home():
     It returns a welcome message.
     """
     return {"message": "LangChain Chatbot API"}
+
+@app.get("/protected")
+async def protected_route(token: str = Depends(verify_token)):
+    # If the token is valid, this endpoint will execute
+    return {"message": "This is a protected route"}
