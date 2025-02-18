@@ -7,7 +7,7 @@ load_dotenv()
 class ChatBot:
     def __init__(self):
         # URL for Ollama server with Llama 3.1 model
-        self.ollama_url = "http://localhost:11434/v1/ask"  # Example, adjust to your Ollama URL
+        self.ollama_url = "http://localhost:11434/"  # Example, adjust to your Ollama URL
 
     def get_response(self, text: str) -> str:
         # Request payload for the Llama model

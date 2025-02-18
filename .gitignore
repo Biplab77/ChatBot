@@ -2,3 +2,9 @@ myenv
 .env
 package.json
 package-lock.json
+migrations
+env
+.python-version
+Dockerfile
+node_modules
+prisma

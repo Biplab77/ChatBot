@@ -4,15 +4,11 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-load_dotenv(dotenv_path=dotenv_path)
+load_dotenv()  # This loads the variables from .env file
 
-
-# Get the database URL from the environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
-print("DATABASE_URL:", DATABASE_URL)
-# Ensure DATABASE_URL is not None
-if DATABASE_URL is None:
+
+if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set. Check your .env file.")
 
 # Create the SQLAlchemy engine using the DATABASE_URL
