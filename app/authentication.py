@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, Request, Header
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-import jwt
 import os
+import jwt
 from dotenv import load_dotenv
 from jwt.exceptions import DecodeError, ExpiredSignatureError
 load_dotenv()

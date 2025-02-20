@@ -1,3 +1,4 @@
+from langchain_community.llms import ollama
 import os
 import requests
 from dotenv import load_dotenv
@@ -7,7 +8,7 @@ load_dotenv()
 class ChatBot:
     def __init__(self):
         # URL for Ollama server with Llama 3.1 model
-        self.ollama_url = "http://localhost:11434/"  # Example, adjust to your Ollama URL
+        self.ollama_url = "http://localhost:11434/api/chat"  # Example, adjust to your Ollama URL
 
     def get_response(self, text: str) -> str:
         # Request payload for the Llama model
@@ -18,6 +19,7 @@ class ChatBot:
         
         # Send request to Ollama server
         response = requests.post(self.ollama_url, json=payload)
+        
         
         # If the response is successful, extract and return the generated message
         if response.status_code == 200:

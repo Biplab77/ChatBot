@@ -10,9 +10,10 @@ from chatbot import ChatBot  # Import the ChatBot class to handle chatbot intera
 from app.authentication import verify_token, create_access_token, verify_credentials  # Import authentication-related functions
 from database import SessionLocal  # Import the database session for interacting with the database
 from models.chat_history import ChatHistory  # Import the ChatHistory model to store chat records in the database
+
+
 # Initialize the FastAPI app
 app = FastAPI()
-
 
 # Initialize the chatbot instance
 chatbot = ChatBot()
@@ -67,7 +68,7 @@ async def chat(message: Message, token: str = Depends(verify_token)):
     db.add(new_chat)
     db.commit()  # Commit the transaction to save the chat record
     db.refresh(new_chat)  # Refresh the session to get the latest data from the database
-    db.close()  # Close the database session after use
+    db.close()  # Close the database session afzter use
 
     # Return the bot's response as the API response
     return {"response": response}

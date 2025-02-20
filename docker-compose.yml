@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: chatbot_user
+      POSTGRES_PASSWORD: 0000
+      POSTGRES_DB: chat_bot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama_server
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    command: ["serve"]
+
+  langchain-backend:
+    build: .
+    container_name: ChatBot
+    restart: always
+    depends_on:
+      - db
+      - ollama
+    environment:
+      - DATABASE_URL=postgresql://chatbot_user:0000@localhost/chat_bot
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - SECRET_KEY=a35e8aebce3ee605fc1292ec07a9a33930e25be24f703f9ef507979365b8a3e1
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
+  ollama_data:
